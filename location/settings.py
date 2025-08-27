@@ -60,6 +60,7 @@ TEMPLATES = [
     },
 ]
 
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 WSGI_APPLICATION = 'location.wsgi.application'
 
 # --- Base de données ---
