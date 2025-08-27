@@ -10,7 +10,7 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 # --- Sécurité ---
 
 SECRET_KEY = config("SECRET_KEY")
-DEBUG = config("DEBUG", default=False, cast=bool)
+DEBUG = config("DEBUG", default=True, cast=bool)
 ALLOWED_HOSTS = config("ALLOWED_HOSTS", cast=Csv())
 CORS_ALLOWED_ORIGINS = config("CORS_ALLOWED_ORIGINS", cast=Csv())
 
@@ -33,6 +33,7 @@ INSTALLED_APPS = [
 # --- Middleware ---
 MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",  # doit être tout en haut
+    "whitenoise.middleware.WhiteNoiseMiddleware", # <-- Ajoutez cette ligne
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',

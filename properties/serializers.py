@@ -1,27 +1,39 @@
-from rest_framework import serializers
-from .models import Property, Favorite, PropertyImage
+# properties/serializers.py
 
-# Nouveau sérialiseur pour le modèle PropertyImage
-# Il est nécessaire pour sérialiser le champ 'image'
+from rest_framework import serializers
+from .models import Property, PropertyImage, Favorite
+
 class PropertyImageSerializer(serializers.ModelSerializer):
+    image_url = serializers.SerializerMethodField()
+
     class Meta:
         model = PropertyImage
-        fields = ('image',) # Vous pouvez ajouter d'autres champs si nécessaire
+        fields = ["id", "image", "image_url", "is_main"]
 
-# Sérialiseur pour le modèle Property
+    def get_image_url(self, obj):
+        request = self.context.get("request")
+        if request is not None:
+            return request.build_absolute_uri(obj.image.url)
+        return obj.image.url
+
+
 class PropertySerializer(serializers.ModelSerializer):
-    # Ajoutez cette ligne pour inclure les images liées à la propriété
-    # 'many=True' gère la liste d'images
-    # 'read_only=True' empêche la création d'images lors de la création d'une propriété
     images = PropertyImageSerializer(many=True, read_only=True)
-    
+    video = serializers.SerializerMethodField()
+
     class Meta:
         model = Property
-        # '__all__' inclut tous les champs du modèle Property, et maintenant le champ 'images' que nous venons d'ajouter.
-        fields = '__all__'
+        fields = "__all__"
 
-# Le reste du fichier est inchangé
+    def get_video(self, obj):
+        request = self.context.get("request")
+        if obj.video and request is not None:
+            return request.build_absolute_uri(obj.video.url)
+        return None
+
 class FavoriteSerializer(serializers.ModelSerializer):
+    property = PropertySerializer(read_only=True)
+
     class Meta:
         model = Favorite
-        fields = '__all__'
+        fields = ["id", "property"]
